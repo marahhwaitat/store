@@ -24,7 +24,8 @@ export class CartController {
 static async addProduct(req: AuthRequest, res: Response) {
   const userId = req.user?.userId;
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+     res.status(401).json({ message: "Unauthorized" });
+     return;
   }
 
   const { productId, quantity } = req.body;
@@ -44,7 +45,10 @@ static async addProduct(req: AuthRequest, res: Response) {
  
   if (!cart) {
     const user = await userRepo.findOneBy({ id: req.params.userId });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) { 
+       res.status(404).json({ message: "User not found" });
+      return;
+      }
 
     cart = cartRepo.create({ user, isActive: true });
     await cartRepo.save(cart);
@@ -52,7 +56,8 @@ static async addProduct(req: AuthRequest, res: Response) {
 
 
   const product = await productRepo.findOneBy({ id: productId });
-  if (!product) return res.status(404).json({ message: "Product not found" });
+  if (!product) { res.status(404).json({ message: "Product not found" });
+return;}
 
  
   const existing = await cartProductRepo.findOneBy({
@@ -63,7 +68,8 @@ static async addProduct(req: AuthRequest, res: Response) {
   if (existing) {
     existing.quantity += parseInt(quantity as string, 10);
     await cartProductRepo.save(existing);
-    return res.json(existing);
+   res.json(existing);
+    return ;
   }
 
   
@@ -75,7 +81,8 @@ static async addProduct(req: AuthRequest, res: Response) {
 
   await cartProductRepo.save(newItem);
 
-  return res.status(201).json(newItem);
+  res.status(201).json(newItem);
+  return ;
 }
   // get cart contents 
 static async getCartContents(req: AuthRequest, res: Response){
@@ -90,12 +97,17 @@ static async getCartContents(req: AuthRequest, res: Response){
     relations: ["cartProducts", "cartProducts.product", "user"],
   });
 
-  if (!cart) return res.status(404).json({ message: "Cart not found" });
+  if (!cart) {
+    
+    res.status(404).json({ message: "Cart not found" });
+  return;
+}
 
   
  
 
-  return res.json(cart);
+   res.json(cart);
+   return;
 }
 
 
@@ -117,7 +129,8 @@ static async removeProduct(req: AuthRequest, res: Response) {
   });
 
   if (!cart) {
-    return res.status(404).json({ message: "Cart not found" });
+     res.status(404).json({ message: "Cart not found" });
+     return;
   }
 
   
@@ -125,11 +138,13 @@ static async removeProduct(req: AuthRequest, res: Response) {
  
   const item = await cartProductRepo.findOneBy({ cartId, productId });
   if (!item) {
-    return res.status(404).json({ message: "Item not found in cart" });
+     res.status(404).json({ message: "Item not found in cart" });
+     return;
   }
 
  
   await cartProductRepo.remove(item);
-  return res.json({ message: "Product removed from cart" });
+   res.json({ message: "Product removed from cart" });
+   return;
 }
 }

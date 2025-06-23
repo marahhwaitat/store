@@ -18,10 +18,12 @@ export class DocumentController {
       document.name = file.filename;
       document.url = `/upload/${file.filename}`;
       const saved = await AppDataSource.getRepository(Document).save(document);
-      return res.status(201).json(saved);
+       res.status(201).json(saved);
+       return;
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ message: "Server error" });
+      res.status(500).json({ message: "Server error" });
+       return ;
     }
   }
 }
