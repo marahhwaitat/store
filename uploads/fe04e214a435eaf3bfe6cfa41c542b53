@@ -1,0 +1,31 @@
+import { Request, Response, NextFunction } from 'express';
+import * as jwt from 'jsonwebtoken';
+
+
+export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Token is missing' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
+   (req as any).user = decoded;
+
+    next();
+  } catch (err) {
+    
+    if (err instanceof jwt.TokenExpiredError) {
+      return res.status(401).json({ message: 'Token has expired' });
+    }
+   
+    if (err instanceof jwt.JsonWebTokenError) {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+ 
+    console.error('Auth middleware error:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};

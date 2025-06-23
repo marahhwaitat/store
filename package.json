@@ -1,0 +1,40 @@
+{
+  "name": "node_mysql_crud",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "build": "tsc",
+    "typeorm:cli-d": "ts-node  ./node_modules/.bin/typeorm -d src/data-source.ts",
+    "migration:generate": "npm run typeorm:cli-d migration:generate",
+    "migration:up": "npm run typeorm:cli-d migration:run",
+    "migration:down": "npm run typeorm:cli-d migration:revert"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "dotenv": "^16.0.3",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.1",
+    "moment": "^2.30.1",
+    "multer": "^2.0.1",
+    "mysql2": "^3.6.0",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.17"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^24.0.3",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  }
+}
