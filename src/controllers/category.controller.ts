@@ -12,7 +12,7 @@ const categoryRepo = AppDataSource.getRepository(Category);
 
 export class CategoryController {
   // get all category
-  static async getAll(req: Request, res: Response) : Promise<any> {
+  static async getAll(req: Request, res: Response)  {
     try {
       const categories = await categoryRepo.find({ relations: ["products"] });
       res.json(categories);
@@ -21,7 +21,7 @@ export class CategoryController {
     }
   }
   /// get category
-  static async getById(req: Request, res: Response) : Promise<any>  {
+  static async getById(req: Request, res: Response)   {
     try {
       const category = await categoryRepo.findOne({
         where: { id: req.params.id },
@@ -38,11 +38,12 @@ export class CategoryController {
     }
   }
   ////create category
-  static async create(req: Request, res: Response) : Promise<any> {
+  static async create(req: Request, res: Response)  {
     const dto = plainToInstance(CreateCategoryDto, req.body);
     const errors = await validate(dto);
     if (errors.length > 0) {
-      return res.status(400).json({ message: "Validation failed", errors });
+       res.status(400).json({ message: "Validation failed", errors });
+       return;
     }
 
     try {
@@ -54,32 +55,37 @@ export class CategoryController {
     }
   }
   // updata category
-  static async update(req: Request, res: Response) : Promise<any>  {
+  static async update(req: Request, res: Response)   {
     const dto = plainToInstance(UpdateCategoryDto, req.body);
     const errors = await validate(dto);
 
     if (errors.length > 0) {
-      return res.status(400).json({ message: "Validation failed", errors });
+       res.status(400).json({ message: "Validation failed", errors });
+     return;
     }
-
+    
     try {
       const category = await categoryRepo.findOneBy({ id: req.params.id });
       if (!category)
-        return res.status(404).json({ message: "Category not found" });
+      {  res.status(404).json({ message: "Category not found" });
+       return;}
 
      await categoryRepo.update(category.id, dto);
      await category.reload()
       res.json(category);
     } catch (error) {
       res.status(400).json({ message: "Error updating category", error });
+      return;
     }
+  
   }
   // delete a category
-  static async delete(req: Request, res: Response) : Promise<any>  {
+  static async delete(req: Request, res: Response)  {
     try {
       const category = await categoryRepo.findOneBy({ id: req.params.id });
       if (!category)
-        return res.status(404).json({ message: "Category not found" });
+         res.status(404).json({ message: "Category not found" });
+        return;
 
       await categoryRepo.remove(category);
       res.json({ message: "Category deleted successfully" });

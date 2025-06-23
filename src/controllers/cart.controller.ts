@@ -21,7 +21,7 @@ export class CartController {
 
   
 // add product
-static async addProduct(req: AuthRequest, res: Response): Promise<any> {
+static async addProduct(req: AuthRequest, res: Response) {
   const userId = req.user?.userId;
   if (!userId) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -29,7 +29,8 @@ static async addProduct(req: AuthRequest, res: Response): Promise<any> {
 
   const { productId, quantity } = req.body;
   if (!productId || !quantity) {
-    return res.status(400).json({ message: "productId and quantity are required" });
+    res.status(400).json({ message: "productId and quantity are required" });
+    return ;
   } 
  
   let cart = await cartRepo.findOne({
@@ -77,10 +78,11 @@ static async addProduct(req: AuthRequest, res: Response): Promise<any> {
   return res.status(201).json(newItem);
 }
   // get cart contents 
-static async getCartContents(req: AuthRequest, res: Response): Promise<any> {
+static async getCartContents(req: AuthRequest, res: Response){
   const userId = req.user?.userId;
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+     res.status(401).json({ message: "Unauthorized" });
+     return;
   }
 
   const cart = await cartRepo.findOne({
@@ -99,10 +101,11 @@ static async getCartContents(req: AuthRequest, res: Response): Promise<any> {
 
 
   // remove Product
-static async removeProduct(req: AuthRequest, res: Response): Promise<any> {
+static async removeProduct(req: AuthRequest, res: Response) {
   const userId = req.user?.userId;
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+     res.status(401).json({ message: "Unauthorized" });
+     return;
   }
 
   const { cartId, productId } = req.params;

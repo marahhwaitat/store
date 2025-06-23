@@ -5,12 +5,13 @@ import * as multer from "multer";
 import path = require("path");
 
 export class DocumentController {
-  static async uploadFile(req: Request, res: Response): Promise<any> {
+  static async uploadFile(req: Request, res: Response) {
     try {
       const file = (req as any).file;
 
       if (!file) {
-        return res.status(400).json({ message: "No file uploaded" });
+       res.status(400).json({ message: "No file uploaded" });
+        return ;
       }
 
       const document = new Document();
