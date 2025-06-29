@@ -1,11 +1,6 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { Product } from "../entity/product.entity";
-
-import { validate } from "class-validator";
-import { plainToInstance } from "class-transformer";
-import { CreateProductDto } from "../dto/product/createProduct.dto";
-import { UpdateProductDto } from "../dto/product/update-product.dto";
 import { Category } from "../entity/category.entity";
 import { Document } from "../entity/document.entity";
 

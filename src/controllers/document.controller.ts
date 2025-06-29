@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { Document } from "../entity/document.entity";
-import * as multer from "multer";
 import path = require("path");
 
 export class DocumentController {

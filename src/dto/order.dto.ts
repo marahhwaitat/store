@@ -4,16 +4,6 @@ import { IsString ,IsNotEmpty, IsUUID, IsPhoneNumber } from "class-validator";
     @IsUUID()
     userId : string ;
 
-    @IsString()
-    @IsNotEmpty()
-    name:string;
-
-    @IsPhoneNumber('JO')
-    phone : string ;
-
-    @IsNotEmpty()
-    @IsString()
-    address : string;
 
 }
 

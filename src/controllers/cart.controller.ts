@@ -60,10 +60,14 @@ static async addProduct(req: AuthRequest, res: Response) {
 return;}
 
  
-  const existing = await cartProductRepo.findOneBy({
-    cartId: cart.id,
-    productId,
-  });
+  const existing = await cartProductRepo.findOne({
+   where : {
+      cart : {id :cart.id},
+      product : {id : productId}
+    },
+    relations : ['cart','product']
+    
+   });
 
   if (existing) {
     existing.quantity += parseInt(quantity as string, 10);
@@ -136,7 +140,14 @@ static async removeProduct(req: AuthRequest, res: Response) {
   
  
  
-  const item = await cartProductRepo.findOneBy({ cartId, productId });
+  const item = await cartProductRepo.findOne({ 
+    where : {
+      cart : {id :cart.id},
+      product : {id : productId}
+    },
+    relations : ['cart','product']
+    
+   });
   if (!item) {
      res.status(404).json({ message: "Item not found in cart" });
      return;

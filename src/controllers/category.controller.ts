@@ -3,10 +3,8 @@ import { AppDataSource } from "../data-source";
 import { Category } from "../entity/category.entity";
 import { CreateCategoryDto, UpdateCategoryDto } from "../dto/category.dto";
 import { plainToInstance } from "class-transformer";
-import { validate, Validate } from "class-validator";
-import { Product } from "../entity/product.entity";
-import { error } from "console";
-import { Otp } from "../entity/otp.entity";
+import { validate } from "class-validator";
+
 
 const categoryRepo = AppDataSource.getRepository(Category);
 

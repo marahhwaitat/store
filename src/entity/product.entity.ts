@@ -32,8 +32,8 @@ quantity : number;
   @OneToMany(() => Document, (doc) => doc.product)
   documents: Document[];
 
-  @OneToMany(() => CartProduct, (cp) => cp.product)
-  cartProducts: CartProduct[];
+  @OneToMany(() => CartProduct, (cartProduct) => cartProduct.product)
+cartProducts: CartProduct[];
  
 
 }

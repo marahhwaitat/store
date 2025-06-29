@@ -3,6 +3,9 @@ import express from 'express';
 import cors from 'cors';
 import { AppDataSource } from './src/data_source';
 import authRoutes from './src/routes/auth.routes';
+import axios from 'axios';
+import { error } from 'console';
+import axios from 'axios';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -25,3 +28,8 @@ AppDataSource.initialize()
   .catch((error) => {
     console.error('Error connecting to DB:', error.message);
   });
+  
+
+
+ 
+
