@@ -4,6 +4,6 @@ import { signup, login, resetPassword ,resetPasswordRequest } from'../controller
 
 router.post("/signup", signup);
 router.post("/login", login);
-router.post("/reset-password", resetPassword);
-router.post('/request-password-reset', resetPasswordRequest);
+router.post("/reset-password/otp", resetPassword);
+router.post('/request-password/set', resetPasswordRequest);
 export default router;

@@ -23,50 +23,51 @@ export class ProductController {
 
     if (!product) {
       res.status(404).json({ message: "Product not found" });
-      return;}
+      return;
+    }
     res.json(product);
   }
   /// create product
   static async create(req: Request, res: Response) {
-    const [category, document] = await Promise.all([
-      categoryRepo.findOne({ where: { id: req.body.categoryId } }),
-      documentRepo.findOne({ where: { id: req.body.documentId } }),
-    ]);
-    if (!category) {
-      res.status(400).json({
-        message: `Category with id ${req.body.categoryId} not found.`,
-      });
-      return ;
-    }
-
-    if (!document) {
-       res.status(400).json({
-        message: `Document with id ${req.body.documentId} not found.`,
-      });
-      return;
-    }
-
-    const existingProduct = await productRepo.findOne({
-      where: { documents: { id: req.body.documentId } },
-      relations: ["documents"],
-    });
-
-    if (existingProduct) {
-       res.status(400).json({
-        message: `Document with id ${req.body.documentId} is already assigned to another product.`,
-      });
-      return;
-    }
-
-    const product = productRepo.create({
-      name: req.body.name,
-      price: req.body.price,
-      quantity: req.body.quantity,
-      category: { id: req.body.categoryId },
-      documents: [document],
-    });
-
     try {
+      const [category, document] = await Promise.all([
+        categoryRepo.findOne({ where: { id: req.body.categoryId } }),
+        documentRepo.findOne({ where: { id: req.body.documentId } }),
+      ]);
+      if (!category) {
+        res.status(400).json({
+          message: `Category with id ${req.body.categoryId} not found.`,
+        });
+        return;
+      }
+
+      if (!document) {
+        res.status(400).json({
+          message: `Document with id ${req.body.documentId} not found.`,
+        });
+        return;
+      }
+
+      const existingProduct = await productRepo.findOne({
+        where: { documents: { id: req.body.documentId } },
+        relations: ["documents"],
+      });
+
+      if (existingProduct) {
+        res.status(400).json({
+          message: `Document with id ${req.body.documentId} is already assigned to another product.`,
+        });
+        return;
+      }
+
+      const product = productRepo.create({
+        name: req.body.name,
+        price: req.body.price,
+        quantity: req.body.quantity,
+        category: { id: req.body.categoryId },
+        documents: [document],
+      });
+
       const result = await productRepo.save(product);
       res.status(201).json(result);
     } catch (error) {
@@ -75,56 +76,56 @@ export class ProductController {
   }
 
   // update product
-  static async update(req: Request, res: Response){
-    const product = await productRepo.findOne({
-      where: { id: req.params.id },
-      relations: ["documents"], // load related documents if needed
-    });
-
-    if (!product) {
-       res.status(404).json({ message: "Product not found" });
-       return;
-    }
-
-    if (req.body.name ) product.name = req.body.name;
-    if (req.body.price) product.price = req.body.price;
-    if (req.body.quantity ) product.quantity = req.body.quantity;
-    if (req.body.categoryId)
-      product.category = { id: req.body.categoryId } as any;
-
-    if (req.body.documentId) {
-      // Check if document exists
-      const document = await documentRepo.findOne({
-        where: { id: req.body.documentId },
+  static async update(req: Request, res: Response) {
+    try {
+      const product = await productRepo.findOne({
+        where: { id: req.params.id },
+        relations: ["documents"], // load related documents if needed
       });
-      if (!document) {
-        res.status(400).json({
-          message: `Document with id ${req.body.documentId} not found.`,
-        });
+
+      if (!product) {
+        res.status(404).json({ message: "Product not found" });
         return;
       }
 
-      // Check if the document is already used by another product
-      const existingProduct = await productRepo.findOne({
-        where: {
-          documents: { id: req.body.documentId },
-          id: product.id, // exclude the current product itself
-        },
-        relations: ["documents"],
-      });
+      if (req.body.name) product.name = req.body.name;
+      if (req.body.price) product.price = req.body.price;
+      if (req.body.quantity) product.quantity = req.body.quantity;
+      if (req.body.categoryId)
+        product.category = { id: req.body.categoryId } as any;
 
-      if (existingProduct) {
-        res.status(400).json({
-          message: `Document with id ${req.body.documentId} is already assigned to another product.`,
+      if (req.body.documentId) {
+        // Check if document exists
+        const document = await documentRepo.findOne({
+          where: { id: req.body.documentId },
         });
-        return ;
+        if (!document) {
+          res.status(400).json({
+            message: `Document with id ${req.body.documentId} not found.`,
+          });
+          return;
+        }
+
+        // Check if the document is already used by another product
+        const existingProduct = await productRepo.findOne({
+          where: {
+            documents: { id: req.body.documentId },
+            id: product.id, // exclude the current product itself
+          },
+          relations: ["documents"],
+        });
+
+        if (existingProduct) {
+          res.status(400).json({
+            message: `Document with id ${req.body.documentId} is already assigned to another product.`,
+          });
+          return;
+        }
+
+        // Assign the new document to the product
+        product.documents = [document];
       }
 
-      // Assign the new document to the product
-      product.documents = [document];
-    }
-
-    try {
       const result = await productRepo.save(product);
       res.json(result);
     } catch (error) {
@@ -134,13 +135,13 @@ export class ProductController {
 
   //  delete product
   static async delete(req: Request, res: Response): Promise<any> {
-    const product = await productRepo.findOneBy({ id: req.params.id });
-    if (!product) {
-       res.status(404).json({ message: "Product not found" });
+    const {affected} = await productRepo.softDelete({ id: req.params.id });
+    if (!affected) {
+      res.status(404).json({ message: "Product not found" });
       return;
     }
 
-    await productRepo.remove(product);
+   
     res.json({ message: "Product deleted successfully" });
   }
 }

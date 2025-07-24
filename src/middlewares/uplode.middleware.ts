@@ -20,8 +20,8 @@ const fileFilter = (
   file: multer.File,
   cb: FileFilterCallback
 ) => {
-  const allowedExt = ['.jpeg', '.jpg', '.png', '.pdf'];
-  const allowedMime = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+  const allowedExt = ['.jpeg', '.jpg', '.png', ];
+  const allowedMime = ['image/jpeg', 'image/jpg', 'image/png'];
 
   const ext = path.extname(file.originalname).toLowerCase();
   const mime = file.mimetype.toLowerCase();

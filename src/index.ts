@@ -16,17 +16,20 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
-app.use(express.json());
 
+/** MiddleWares */
+app.use(express.json());
 app.use("/upload", express.static(path.join(__dirname, "../uploads")));
+
+/** Routes */
 app.use("/api/auth", authRoutes);
 app.use("/api/documents", documentRouter);
-app.use("/api/product", productRoutes);
+app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 
-app.use("/api/order", orderRouter);
+app.use("/api/orders", orderRouter);
 
-app.use("/api/cart", cartRouter);
+app.use("/api/carts", cartRouter);
 
 AppDataSource.initialize()
   .then(() => {

@@ -5,7 +5,7 @@ import { validationMiddleWare } from '../middlewares/validation.middleware';
 import { authMiddleware } from '../middlewares/auth.middleware.';
 const router = Router();
 
-router.post('/add', authMiddleware, validationMiddleWare(AddProductToCartDto), CartController.addProduct);
+router.post('/add-product', authMiddleware, validationMiddleWare(AddProductToCartDto), CartController.addProduct);
 
 router.get('/:id',authMiddleware , CartController.getCartContents);
 router.delete('/:id',authMiddleware ,CartController.removeProduct);

@@ -7,7 +7,7 @@ import axios from "axios";
 import { Status } from "../enums/status";
 import { calculateTotalAmount } from "../utils/calculateAmount";
 import { Cart } from "../entity/cart.entity";
-import {initiatePayment} from "../services/payment";
+import { initiatePayment } from "../services/payment";
 const orderRepo = AppDataSource.getRepository(Order);
 const userRepo = AppDataSource.getRepository(User);
 const cartProductRepo = AppDataSource.getRepository(CartProduct);
@@ -32,48 +32,45 @@ export class OrderController {
     }
     res.json(order);
   }
-   // create 
+  // create
   static async create(req: Request, res: Response) {
-  try {
-  const result = await initiatePayment(req, res);
-  res.status(200).json({
-    message: "payment initiated successfully",
-    paymentUrl: result.paymentUrl,
-    cartId: result.cartId,
-    amount: result.amount
-  });
-} catch (error) {
-  res.status(500).json({ message: "payment initiation failed", error });
-}
+    try {
+      const result = await initiatePayment(req, res);
+      res.status(200).json({
+        message: "payment initiated successfully",
+        paymentUrl: result.paymentUrl,
+        cartId: result.cartId,
+        amount: result.amount,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "payment initiation failed", error });
+    }
   }
 
-   static async paymentCallback ( req  :Request ,res :Response){
+  static async paymentCallback(req: Request, res: Response) {
     const paymentData = req.body;
-    const cartId =paymentData.cartId;
+    const cartId = paymentData.cartId;
 
     const cart = await cartRepo.findOne({
-  where: { user: { id: req.params.id } },
-  relations: ['cartProducts'],
-});
-   
-    if (!cart){
-      res.status(404).json ({ message : "Cart not found "});
+      where: { id: cartId },
+      relations: ["user"],
+    });
+
+    if (!cart) {
+      res.status(404).json({ message: "Cart not found " });
     }
-    const amount = calculateTotalAmount(cart.cartProducts);
+    console.log(paymentData);
     const paymentSuccess = paymentData.payment_result?.response_status === "A";
 
-    const order = orderRepo.create ({
-      user : cart.user ,
-      amount,
-      status : paymentSuccess ? Status.PAID : Status.FAILED,
-      cartProducts :cart.cartProducts,
+    const order = orderRepo.create({
+      user: cart.user,
+      amount: paymentData.cart_amount,
+      status: paymentSuccess ? Status.PAID : Status.FAILED,
     });
+
     await orderRepo.save(order);
 
-    for (const item of cart.cartProducts){
-      item.order =order;
-      await cartProductRepo.save(item);
-    }
+
 
     cart.isActive = false;
     await cartRepo.save(cart);
@@ -84,9 +81,7 @@ export class OrderController {
         : "Payment failed. Order saved with FAILED status.",
     });
     return;
-
-   }
-
+  }
 
   static async update(req: Request, res: Response) {
     const order = await orderRepo.findOneBy({ id: req.params.id });
@@ -109,6 +104,5 @@ export class OrderController {
 
     await orderRepo.remove(order);
     res.json({ message: "Order deleted successfully" });
-  
   }
 }
